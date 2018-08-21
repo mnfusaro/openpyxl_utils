@@ -1,14 +1,11 @@
 from terminalsize import get_terminal_size
 from openpyxl.worksheet.worksheet import Worksheet, Cell
+import string
 
 
-#	Given a row of cells, returns a list of said cells' values
+#	Given a row of cells (a column works too), returns a list of said cells' values
 def list_row_values(row):
-	result = []
-	for cell in row:
-		result.append(cell.value)
-	return result
-
+	return [cell.value for cell in row]
 
 #	Given a worksheet, will adjusts it's columns' widths to fit the longest cell's content. Max and min column width can be given.
 def adjust_col_width(ws, min_width=8, max_width=30):
@@ -216,6 +213,10 @@ def apply_format(ws, font=None, fill=None, border=None, h_font=None, h_fill=None
 
 
 def col_to_num(col):
+	if isinstance(col, int):
+		return col
+	elif col.isdigit():
+		return col_to_num(int(col))
 	num = 0
 	for c in col:
 		if c in string.ascii_letters:
@@ -224,11 +225,13 @@ def col_to_num(col):
 
 def num_to_col(n):
 	if isinstance(n, int):
-		string = ""
+		s = ""
 		while n > 0:
 			n, remainder = divmod(n - 1, 26)
-			string = chr(65 + remainder) + string
-		return string
-	elif n.isdigit():
-		num_to_col(int(n))
+			s = chr(65 + remainder) + s
+		return s
+	elif n.isdigit(): 
+		return num_to_col(int(n))
+	else:
+		return n
 	
